@@ -47,6 +47,7 @@
     (view-iterator cursatom)))
 
 (defn view-url
+  "Get the a URL for use with view-seq. bases is the Couch API bases list from cbdrawer.client/capi-bases"
   [bases ddoc viewname]
   (str (rand-nth bases) "/_design/" ddoc "/_view/" viewname))
 

@@ -5,10 +5,11 @@
            [net.spy.memcached CachedData]
            [java.net URI]))
 
-(def json-transcoder
+(def 
   ^{:doc
  "A spymemcached Transcoder that serializes Clojure datastructures to
   JSON, which allows use of Couchbase Views."}
+  json-transcoder
   (proxy [Transcoder] []
     (asyncDecode [_] false)
     (decode [bs] (json/parse-string (String. (.getData bs)) true))

@@ -12,7 +12,7 @@
                         (f current)))]
        (.cas (CASMutator. conn transcoder) key nil 0 mutation)))
 
-(def ^:private cb-default-transcoder (net.spy.memcached.transcoders.SerializingTranscoder.))
+(def cb-default-transcoder (net.spy.memcached.transcoders.SerializingTranscoder.))
 (def ^:dynamic *transcoder* client/clj-transcoder)
 
 (defn derefable-future
