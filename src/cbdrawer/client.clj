@@ -66,32 +66,40 @@
                         (f current)))]
        (.cas (CASMutator. conn transcoder) key nil 0 mutation)))
 
+(defn- to-key
+  [keylike]
+  (cond 
+    (keyword? keylike) (let [kns (namespace keylike)
+                             kname (name keylike)]
+                         (str (when kns (str kns "/")) kname))
+    true (str keylike)))
+
 (defn cas!
   "Atomically update an item with f and additional args. Returns the new value."
   [^CouchbaseClient conn k f & args]
-  (cas-with-transcoder! conn (name k) #(apply (partial f %) args) *transcoder*))
+  (cas-with-transcoder! conn (to-key k) #(apply (partial f %) args) *transcoder*))
 
 (defn get
   "Get an item, synchronously"
   [^CouchbaseClient conn k]
-  (.get conn (name k) *transcoder*))
+  (.get conn (to-key k) *transcoder*))
 
 (defn get-async
   "Get an item asynchronously. Returns the result in a future"
   [^CouchbaseClient conn k]
-  (derefable-future (.asyncGet conn (name k) *transcoder*)))
+  (derefable-future (.asyncGet conn (to-key k) *transcoder*)))
 
 (defn delete!
   "Delete an item. Returns a boolean indicating whether the operation succeeded
   in a future"
   [^CouchbaseClient conn k]
-  (derefable-future (.delete conn (name k))))
+  (derefable-future (.delete conn (to-key k))))
 
 (defn add!
   "Create an item iff it doesn't already exist. Returns a boolean indicating
   whether the operation succeeded in a future"
   ([^CouchbaseClient conn k value ^long expiration] 
-   (derefable-future (.add conn (name k) expiration value *transcoder*)))
+   (derefable-future (.add conn (to-key k) expiration value *transcoder*)))
   ([conn k value]
    (add! conn k value 0)))
 
@@ -99,6 +107,6 @@
   "Update the value of an item, creating it if it does not exist. Returns a
   boolean indicating whether the operation succeeded in a future"
   ([^CouchbaseClient conn k value ^long expiration] 
-   (derefable-future (.set conn (name k) expiration value *transcoder*)))
+   (derefable-future (.set conn (to-key k) expiration value *transcoder*)))
   ([conn k value]
    (force! conn k value 0)))
