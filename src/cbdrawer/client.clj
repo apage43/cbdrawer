@@ -66,7 +66,7 @@
                         (f current)))]
        (.cas (CASMutator. conn transcoder) key nil 0 mutation)))
 
-(defn- to-key
+(defn- to-key ^String
   [keylike]
   (cond 
     (keyword? keylike) (let [kns (namespace keylike)

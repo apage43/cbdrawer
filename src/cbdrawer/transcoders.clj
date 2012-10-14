@@ -10,8 +10,8 @@
   json-transcoder
   (proxy [Transcoder] []
     (asyncDecode [_] false)
-    (decode [bs] (cheshire/parse-string (String. (.getData bs)) true))
-    (encode [o] (CachedData. 0 (.getBytes (cheshire/encode o)) CachedData/MAX_SIZE))
+    (decode [^CachedData bs] (cheshire/parse-string (String. (.getData bs)) true))
+    (encode [o] (CachedData. 0 (.getBytes (cheshire/generate-string o)) CachedData/MAX_SIZE))
     (getMaxSize [] CachedData/MAX_SIZE)))
 
 (def 
@@ -21,8 +21,8 @@
   smile-transcoder
   (proxy [Transcoder] []
     (asyncDecode [_] false)
-    (decode [bs] (cheshire/parse-smile (.getData bs) true))
-    (encode [o] (CachedData. 0 (cheshire/encode-smile o) CachedData/MAX_SIZE))
+    (decode [^CachedData bs] (cheshire/parse-smile (.getData bs) true))
+    (encode [o] (CachedData. 0 (cheshire/generate-smile o) CachedData/MAX_SIZE))
     (getMaxSize [] CachedData/MAX_SIZE)))
 
 (def 
@@ -33,7 +33,7 @@
   clj-transcoder
   (proxy [Transcoder] []
     (asyncDecode [_] false)
-    (decode [bs] (read-string (String. (.getData bs))))
+    (decode [^CachedData bs] (read-string (String. (.getData bs))))
     (encode [o] (CachedData. 0 (.getBytes (pr-str o)) CachedData/MAX_SIZE))
     (getMaxSize [] CachedData/MAX_SIZE)))
 
