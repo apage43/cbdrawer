@@ -61,8 +61,8 @@
   "Atomically update an item with the result of applying `f` to it,
    with a specified transcoder."
   [^CouchbaseClient conn key f ^Transcoder transcoder]
-     (let [mutation (proxy [CASMutation] []
-                      (getNewValue [current]
+     (let [mutation (reify CASMutation
+                      (getNewValue [_this current]
                         (f current)))]
        (.cas (CASMutator. conn transcoder) key nil 0 mutation)))
 
