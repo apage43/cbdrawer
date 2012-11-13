@@ -1,5 +1,5 @@
 (ns cbdrawer.client
-  (:refer-clojure :exclude [get set!])
+  (:refer-clojure :exclude [get])
   (:require [cbdrawer.transcoders :as xcoders])
   (:import [com.couchbase.client CouchbaseClient CouchbaseConnectionFactory]
            [net.spy.memcached.transcoders Transcoder]
@@ -28,7 +28,7 @@
 (defn capi-bases
   "Get the Couch-API base URLs from a cluster/bucket."
   [^CouchbaseConnectionFactory connectionfactory]
-  (vec (.getCouchServers (.getVBucketConfig connectionfactory))))
+  (vec (.. connectionfactory (getVBucketConfig) (getCouchServers))))
 
 (def ^:dynamic ^Transcoder *transcoder* xcoders/clj-transcoder)
 
@@ -36,7 +36,6 @@
   "Globally reset the default transcoder."
   [transcoder]
   (alter-var-root #'*transcoder* (fn [_] transcoder)))
-
 
 (defmacro with-transcoder
   "Serialize and deserialize items in this block using the specified transcoder.
