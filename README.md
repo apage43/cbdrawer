@@ -3,7 +3,7 @@
 A utility belt for using [Couchbase Server](http://couchbase.com/) with Clojure.
 
 ```clojure
-[apage43/cbdrawer "0.1.0"]
+[apage43/cbdrawer "0.2.0"]
 ```
 
 This is not currently a complete wrapping of all of the client functionality, just the parts I've needed so far.
@@ -16,5 +16,5 @@ This is not currently a complete wrapping of all of the client functionality, ju
  * Ops take keyword keys as well as strings
  * Includes a cas! function in the style of swap! and friends. `(cas! conn :key-of-some-list conj :newitem)`
 
-For all functionality, see the [API docs](http://apage43.github.com/cbdrawer/doc/index.html).
+For all functionality, see the [API docs](http://apage43.github.com/cbdrawer/).
 
