@@ -3,7 +3,7 @@
   (:import [net.spy.memcached.transcoders Transcoder]
            [net.spy.memcached CachedData]))
 
-(def 
+(def
   ^{:doc
  "A spymemcached Transcoder that serializes Clojure datastructures to
   JSON, which allows use of Couchbase Views."}
@@ -14,7 +14,7 @@
     (encode [_this o] (CachedData. 0 (.getBytes (cheshire/generate-string o)) CachedData/MAX_SIZE))
     (getMaxSize [_this] CachedData/MAX_SIZE)))
 
-(def 
+(def
   ^{:doc
  "A spymemcached Transcoder that serializes to SMILE, a JSON-compatible compact
  binary format. http://wiki.fasterxml.com/SmileFormatSpec"}
@@ -25,7 +25,7 @@
     (encode [_this o] (CachedData. 0 (cheshire/generate-smile o) CachedData/MAX_SIZE))
     (getMaxSize [_this] CachedData/MAX_SIZE)))
 
-(def 
+(def
   ^{:doc
  "A spymemcached Transcoder that serializes Clojure datastructures.
   The default java Serializing transcoder will work for any Clojure type,

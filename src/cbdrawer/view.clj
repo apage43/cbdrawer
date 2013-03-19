@@ -3,7 +3,7 @@
   (:require [clj-http.client :as http]
             [cheshire.core :as json]))
 
-(def ^:dynamic *view-chunk-size* 50)
+(def ^:dynamic *view-chunk-size* 200)
 
 (defn- view-cursor [url & [parms]]
   {:url url

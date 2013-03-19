@@ -30,7 +30,7 @@
   [^CouchbaseConnectionFactory connectionfactory]
   (vec (.. connectionfactory (getVBucketConfig) (getCouchServers))))
 
-(def ^:dynamic ^Transcoder *transcoder* xcoders/clj-transcoder)
+(def ^:dynamic ^Transcoder *transcoder* xcoders/json-transcoder)
 
 (defn set-transcoder!
   "Globally reset the default transcoder."
@@ -59,24 +59,33 @@
 (defn- cas-with-transcoder!
   "Atomically update an item with the result of applying `f` to it,
    with a specified transcoder."
-  [^CouchbaseClient conn key f ^Transcoder transcoder]
+  ([^CouchbaseClient conn key f ^Transcoder transcoder initial-value]
      (let [mutation (reify CASMutation
                       (getNewValue [_this current]
                         (f current)))]
-       (.cas (CASMutator. conn transcoder) key nil 0 mutation)))
+       (.cas (CASMutator. conn transcoder) key initial-value 0 mutation)))
+  ([conn key f transcoder]
+   (cas-with-transcoder! conn key f nil)))
 
 (defn- to-key ^String
   [keylike]
-  (cond 
-    (keyword? keylike) (let [kns (namespace keylike)
-                             kname (name keylike)]
-                         (str (when kns (str kns "/")) kname))
-    true (str keylike)))
+  (condp apply [keylike]
+    keyword? (let [kns (namespace keylike)
+                   kname (name keylike)]
+               (str (when kns (str kns "/")) kname))
+    (str keylike)))
 
 (defn cas!
-  "Atomically update an item with f and additional args. Returns the new value."
+  "Atomically update an item with f and additional args. Returns the new value.
+  Will fail if item does not exist."
   [^CouchbaseClient conn k f & args]
   (cas-with-transcoder! conn (to-key k) #(apply (partial f %) args) *transcoder*))
+
+(defn add-or-cas!
+  "Atomically update an item with f and additional args. Returns the new value.
+  Takes an value to insert (as-is!) if the item does not already exist."
+  [^CouchbaseClient conn k init f & args]
+  (cas-with-transcoder! conn (to-key k) #(apply (partial f %) args) *transcoder* init))
 
 (defn get
   "Get an item, synchronously"
@@ -96,16 +105,27 @@
 
 (defn add!
   "Create an item iff it doesn't already exist. Returns a boolean indicating
-  whether the operation succeeded in a future"
+  whether the operation succeeded in a future."
+  ([^CouchbaseClient conn k value ^long expiration] 
+   (derefable-future (.add conn (to-key k) expiration value *transcoder*)))
+  ([conn k value]
+   (add! conn k value 0)))
+
+(defn update!
+  "Update an item iff it already exists. Prefer cas! to prevent clobbering
+  other updates. Returns a boolean indicating whether the operation succeeded
+  in a future."
   ([^CouchbaseClient conn k value ^long expiration] 
    (derefable-future (.add conn (to-key k) expiration value *transcoder*)))
   ([conn k value]
    (add! conn k value 0)))
 
 (defn force!
-  "Update the value of an item, creating it if it does not exist. Returns a
-  boolean indicating whether the operation succeeded in a future"
-  ([^CouchbaseClient conn k value ^long expiration] 
+  "Update the value of an item, creating it if it does not exist. Prefer cas!
+  to prevent clobbering other updates. Returns a boolean indicating whether
+  the operation succeeded in a future."
+  ([^CouchbaseClient conn k value ^long expiration]
    (derefable-future (.set conn (to-key k) expiration value *transcoder*)))
   ([conn k value]
    (force! conn k value 0)))
+
