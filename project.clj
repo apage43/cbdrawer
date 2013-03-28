@@ -1,4 +1,4 @@
-(defproject apage43/cbdrawer "0.2.0"
+(defproject apage43/cbdrawer "0.2.1"
   :description "Couchbase utilities"
   :url "http://github.com/apage43/cbdrawer"
   :license {:name "Eclipse Public License"

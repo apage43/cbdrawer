@@ -65,7 +65,7 @@
                         (f current)))]
        (.cas (CASMutator. conn transcoder) key initial-value 0 mutation)))
   ([conn key f transcoder]
-   (cas-with-transcoder! conn key f nil)))
+   (cas-with-transcoder! conn key f transcoder nil)))
 
 (defn- to-key ^String
   [keylike]
