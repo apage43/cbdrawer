@@ -3,7 +3,7 @@
 A utility belt for using [Couchbase Server](http://couchbase.com/) with Clojure.
 
 ```clojure
-[apage43/cbdrawer "0.2.0"]
+[apage43/cbdrawer "0.2.1"]
 ```
 
 This is not currently a complete wrapping of all of the client functionality, just the parts I've needed so far.
