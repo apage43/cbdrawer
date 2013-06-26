@@ -1,5 +1,7 @@
 # cbdrawer
 
+[![Build Status](https://drone.io/github.com/apage43/cbdrawer/status.png)](https://drone.io/github.com/apage43/cbdrawer/latest)
+
 A utility belt for using [Couchbase Server](http://couchbase.com/) with Clojure.
 
 ```clojure
@@ -16,5 +18,5 @@ This is not currently a complete wrapping of all of the client functionality, ju
  * Ops take keyword keys as well as strings
  * Includes a cas! function in the style of swap! and friends. `(cas! conn :key-of-some-list conj :newitem)`
 
-For all functionality, see the [API docs](http://apage43.github.com/cbdrawer/).
+For all functionality, see the [API docs](http://s3.crate.im/cbdrawer/doc/index.html).
 
